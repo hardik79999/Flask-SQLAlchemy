@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if posts %}
+    <table class="contacts-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr>
+                <td class="id-cell">{{ post.id }}</td>
+                <td>{{ post.name }}</td>
+                <td>{{ post.email }}</td>
+                <td class="actions-cell">
+                    <a href="/edit/{{ post.id }}" class="btn-edit">✏️ Edit</a>
+                    <a href="/delete/{{ post.id }}" class="btn-delete" onclick="return confirm('Are you sure?')">🗑️ Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="no-data">
+        <p>No contacts yet. <a href="/create">Create one now!</a></p>
+    </div>
+{% endif %}
+
+{% endblock %}
