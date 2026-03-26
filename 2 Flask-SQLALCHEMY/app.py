@@ -4,7 +4,7 @@ from config import Config
 from models import db
 
 from routes.create_blog_routs import create_routs
-from routes.reate_blog_routs import read_blog_routs
+from routes.read_blog_routs import read_blog_routs
 from routes.update_blog_routs import update_blog_routs
 from routes.delete_blog_routs import delete_blog_routs
 
@@ -17,7 +17,7 @@ app.config.from_object(Config) # use all setting from Config class
 
 
 db.init_app(app) # which app are use
-migrate = Migrate(app , db) # kame migrate app and db
+migrate = Migrate(app , db) # make migrate app and db
 
 
 @app.route('/create-blog', methods = ['POST'])
