@@ -42,15 +42,52 @@ class Tasks(db.Model):
     assigner = db.relationship('Users',foreign_keys=[assigned_by],backref='created_tasks')
 
 
-    def dashboard(self):
-        return {
-            "uuid": self.uuid,
-            "title": self.title,
-            "description": self.description,
-            "status": self.status,
-            "assigned_to": self.assigned_to,
-            "assigned_by": self.assigned_by,
-            "is_active": self.is_active,
-            "created_at": self.created_at.isoformat(),
-            "updated_at": self.updated_at.isoformat()
-        }
+    def admin_dashboard(self):
+        users_data = []
+        tasks_data = []
+        admin_stats = {}
+
+        all_users = Users.query.filter_by(Users.role != 'admin').all()
+        for u in all_users:
+                # get who createed
+                creator = Users.query.filter_by(id=u.created_by).first()
+                creator_name = creator.username if creator else 'System'
+
+                users_data.append({
+                    "uuid": u.uuid,
+                    "username": u.username, 
+                    "role": u.role,
+                    "creator": creator_name
+                })
+
+        admin_stats['total_employee'] = Users.query.filter_by(role='employee').count()
+
+        all_task = Tasks.query.filter_by(is_active=True).all()
+        for t in all_task:
+            assignee = Users.query.filter_by(id=t.assigned_to).first()
+            assignee_name = assignee.username if assignee else 'Unassigned'
+
+            tasks_data.append({
+                    "uuid": t.uuid,
+                    "title": t.title,
+                    "description": t.description, 
+                    "status": t.status,
+                    "assigned_to": assignee_name,
+                    "created_at": self.created_at.isoformat(),
+                    "updated_at": self.updated_at.isoformat(),
+                    "is_my_task": False
+                })
+
+
+    # def dashboard(self):
+    #     return {
+    #         "uuid": self.uuid,
+    #         "title": self.title,
+    #         "description": self.description,
+    #         "status": self.status,
+    #         "assigned_to": self.assigned_to,
+    #         "assigned_by": self.assigned_by,
+    #         "is_active": self.is_active,
+    #         "created_at": self.created_at.isoformat(),
+    #         "updated_at": self.updated_at.isoformat()
+    #     }

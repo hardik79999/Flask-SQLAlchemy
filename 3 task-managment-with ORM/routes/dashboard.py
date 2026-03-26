@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from models import Tasks, db
+from models import Tasks, Users, db 
 
 
 def dashboard_routs(current_user):
@@ -9,9 +9,7 @@ def dashboard_routs(current_user):
         
         if current_user['role'] == "admin":
             
-            task = Tasks.query.all()
-
-            return jsonify([t.dashboard() for t in task])
+            return Tasks.admin_dashboard()
 
         elif current_user['role'] == "manager":
             
