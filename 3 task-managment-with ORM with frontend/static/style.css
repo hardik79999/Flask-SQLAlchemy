@@ -1,0 +1,42 @@
+/* static/style.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+body { background-color: #050505; color: #ffffff; min-height: 100vh; overflow-x: hidden; position: relative; }
+
+/* Background Glowing Orbs */
+.glow-circle { position: absolute; border-radius: 50%; filter: blur(120px); z-index: -1; }
+.shape-1 { width: 400px; height: 400px; background: rgba(59, 130, 246, 0.2); top: -10%; left: -10%; }
+.shape-2 { width: 400px; height: 400px; background: rgba(168, 85, 247, 0.2); bottom: -10%; right: -10%; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 2rem; min-height: 100vh; display: flex; flex-direction: column; }
+
+#login-section { justify-content: center; align-items: center; }
+
+/* Glassmorphism */
+.glass-card, .glass-nav { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+.login-box { padding: 3rem; border-radius: 24px; width: 100%; max-width: 420px; }
+
+.gradient-text { background: linear-gradient(135deg, #60a5fa, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+.subtitle { color: #9ca3af; margin-bottom: 2rem; font-size: 0.9rem; }
+
+/* Inputs */
+.input-group { position: relative; margin-bottom: 1.5rem; }
+.input-group input { width: 100%; padding: 1rem; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white; font-size: 1rem; outline: none; transition: all 0.3s ease; }
+.input-group label { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #6b7280; pointer-events: none; transition: all 0.3s ease; }
+.input-group input:focus, .input-group input:not(:placeholder-shown) { border-color: #60a5fa; box-shadow: 0 0 15px rgba(96, 165, 250, 0.1); }
+.input-group input:focus + label, .input-group input:not(:placeholder-shown) + label { top: -10px; left: 10px; font-size: 0.8rem; background: #050505; padding: 0 5px; color: #60a5fa; }
+
+/* Buttons */
+.btn-primary { width: 100%; padding: 1rem; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; border-radius: 12px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(96, 165, 250, 0.3); }
+
+/* Flash Messages */
+.flash-messages { margin-bottom: 1.5rem; }
+.flash-msg { padding: 1rem; border-radius: 10px; text-align: center; font-size: 0.9rem; margin-bottom: 0.5rem; }
+.flash-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+
+/* Animations */
+.slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }

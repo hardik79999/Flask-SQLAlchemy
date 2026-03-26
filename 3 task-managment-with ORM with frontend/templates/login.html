@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="glow-circle shape-1"></div>
+    <div class="glow-circle shape-2"></div>
+
+    <div id="login-section" class="container">
+        <div class="glass-card login-box slide-up">
+            <h2 class="gradient-text">Welcome Back</h2>
+            <p class="subtitle">Sign in to continue</p>
+            
+            <div class="flash-messages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="flash-msg flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <form action="{{ url_for('login') }}" method="POST">
+                <div class="input-group">
+                    <input type="email" name="email" id="email" required placeholder=" " autocomplete="off">
+                    <label>Email address</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="password" id="password" required placeholder=" " autocomplete="off">
+                    <label>Password</label>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <span>Sign In</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
