@@ -1,4 +1,4 @@
-from flask import Flask , request, jsonify
+from flask import Flask , request, jsonify, render_template
 from flask_migrate import Migrate
 from models import Users , db
 import os
@@ -15,7 +15,9 @@ from routes.delete import delete_routs
 from extensions import mail
 from routes.dashboard import dashboard_routs
 
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 
 # ----------------------------------------------------------------------
 # Rate limiting
@@ -48,7 +50,8 @@ migrate = Migrate(app, db) # make migrate app and db
 
 @app.route('/login', methods = ['POST'])
 def login():
-    return login_routs()
+    # return login_routs()
+    return render_template('index.html')
 
 
 @app.route('/admin/create-users', methods = ['POST'])
