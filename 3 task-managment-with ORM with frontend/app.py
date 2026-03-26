@@ -48,10 +48,11 @@ migrate = Migrate(app, db) # make migrate app and db
 
 
 
-@app.route('/login', methods = ['POST'])
+@app.route('/login', methods=['POST', 'OPTIONS'])
 def login():
-    # return login_routs()
-    return render_template('index.html')
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200  # Preflight check ko turant pass kar do
+    return login_routs()
 
 
 @app.route('/admin/create-users', methods = ['POST'])
