@@ -1,31 +1,18 @@
-from flask import request , jsonify
+from flask import request, redirect, url_for, flash
 from functools import wraps
 import jwt
 import os
 
 def token_required(f):
     @wraps(f)
-    def token(*args, **kwrgs):
+    def token(*args, **kwargs):
+        # Header ki jagah ab hum token COOKIE se nikalenge
+        token_string = request.cookies.get('token')
 
-        auth_header = request.headers.get('Authorization')
-
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return jsonify({
-                "message": 'Token is missing or invalid format!'
-            }), 401
+        if not token_string:
+            flash("Please log in to access this page.", "error")
+            return redirect(url_for('login')) # Redirect to login route
         
-        try:
-            token_string = auth_header.split(" ")[1]
-            if token_string == "":
-                raise IndexError
-            
-            if not token_string:
-                return jsonify({"message": "Token part is missing!"}), 401
-
-        except IndexError:
-            return jsonify({"message": "Token part is missing...!"}), 401
-
-
         try:
             decoded_payload = jwt.decode(token_string, os.getenv('key'), algorithms=["HS256"])
 
@@ -37,11 +24,14 @@ def token_required(f):
             }
 
         except jwt.ExpiredSignatureError:
-            return jsonify({'message': 'Token expired!'}), 401
+            flash("Token expired! Please login again.", "error")
+            return redirect(url_for('login'))
         except jwt.InvalidTokenError:
-            return jsonify({'message': 'Token is invalid!'}), 401
+            flash("Invalid token! Please login again.", "error")
+            return redirect(url_for('login'))
         except Exception:
-            return jsonify({"message":"Something went wrong with the token!"}), 401
+            flash("Something went wrong. Please login again.", "error")
+            return redirect(url_for('login'))
         
-        return f(current_user, *args, **kwrgs)
+        return f(current_user, *args, **kwargs)
     return token
