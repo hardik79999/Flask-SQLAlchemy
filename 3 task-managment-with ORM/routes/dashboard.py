@@ -19,10 +19,8 @@ def dashboard_routs(current_user):
         # EMPLOYEE
         elif current_user['role'] == "employee":
             
-            task = Tasks.query.filter_by(assigned_to=current_user['id']).all()
-
-            return jsonify([t.dashboard() for t in task])
-
+            return jsonify(Tasks.dashboard(current_user))
+            
         else:
             return jsonify({"message": "only register user view dashboard"})
         
