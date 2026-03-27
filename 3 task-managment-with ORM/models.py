@@ -1,7 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy 
 import uuid
 from datetime import datetime
-
 db = SQLAlchemy()
 
 
@@ -16,7 +15,7 @@ class Users(db.Model):
     created_by = db.Column(db.Integer,db.ForeignKey('users.id'),nullable=True)
     created_at = db.Column(db.DateTime,default=datetime.utcnow,nullable=False)
 
-    # 🔥 self-relation
+    # self-relation
     creator = db.relationship(
         'Users',
         remote_side=[id],
@@ -42,52 +41,98 @@ class Tasks(db.Model):
     assigner = db.relationship('Users',foreign_keys=[assigned_by],backref='created_tasks')
 
 
-    def admin_dashboard(self):
+
+    @staticmethod
+    def dashboard(current_user):
         users_data = []
         tasks_data = []
-        admin_stats = {}
+        stats = {}
 
-        all_users = Users.query.filter_by(Users.role != 'admin').all()
-        for u in all_users:
-                # get who createed
-                creator = Users.query.filter_by(id=u.created_by).first()
-                creator_name = creator.username if creator else 'System'
+        try:
 
-                users_data.append({
-                    "uuid": u.uuid,
-                    "username": u.username, 
-                    "role": u.role,
-                    "creator": creator_name
-                })
+            # ================= ADMIN =================
+            if current_user['role'] == 'admin':
 
-        admin_stats['total_employee'] = Users.query.filter_by(role='employee').count()
+                all_users = Users.query.filter(Users.role != 'admin').all()
 
-        all_task = Tasks.query.filter_by(is_active=True).all()
-        for t in all_task:
-            assignee = Users.query.filter_by(id=t.assigned_to).first()
-            assignee_name = assignee.username if assignee else 'Unassigned'
+                for u in all_users:
+                    creator_name = u.creator.username if u.creator else 'System'
 
-            tasks_data.append({
-                    "uuid": t.uuid,
-                    "title": t.title,
-                    "description": t.description, 
-                    "status": t.status,
-                    "assigned_to": assignee_name,
-                    "created_at": self.created_at.isoformat(),
-                    "updated_at": self.updated_at.isoformat(),
-                    "is_my_task": False
-                })
+                    users_data.append({
+                        "uuid": u.uuid,
+                        "username": u.username,
+                        "role": u.role,
+                        "creator": creator_name
+                    })
 
+                stats['total_employee'] = Users.query.filter_by(role='employee').count()
+                stats['total_manager'] = Users.query.filter_by(role='manager').count()
 
-    # def dashboard(self):
-    #     return {
-    #         "uuid": self.uuid,
-    #         "title": self.title,
-    #         "description": self.description,
-    #         "status": self.status,
-    #         "assigned_to": self.assigned_to,
-    #         "assigned_by": self.assigned_by,
-    #         "is_active": self.is_active,
-    #         "created_at": self.created_at.isoformat(),
-    #         "updated_at": self.updated_at.isoformat()
-    #     }
+                tasks = Tasks.query.filter_by(is_active=True).all()
+
+                for t in tasks:
+                    tasks_data.append({
+                        "uuid": t.uuid,
+                        "title": t.title,
+                        "description": t.description,
+                        "status": t.status,
+                        "assigned_to": t.assignee.username if t.assignee else "Unassigned",
+                        "created_at": t.created_at.isoformat(),
+                        "updated_at": t.updated_at.isoformat(),
+                        "is_my_task": False
+                    })
+
+                return {
+                    "users": users_data,
+                    "tasks": tasks_data,
+                    "stats": stats
+                }
+
+            # MANAGER ============================================================================================================
+
+            elif current_user['role'] == 'manager':
+
+                stats['total_employee'] = Users.query.filter_by(created_by=current_user['id']).count()
+
+                tasks = Tasks.query.filter_by(assigned_by=current_user['id'],is_active=True).all()
+
+                for t in tasks:
+                    tasks_data.append({
+                        "uuid": t.uuid,
+                        "title": t.title,
+                        "description": t.description,
+                        "status": t.status,
+                        "assigned_to": t.assignee.username if t.assignee else "N/A",
+                        "created_at": t.created_at.isoformat(),
+                        "updated_at": t.updated_at.isoformat(),
+                        "is_my_task": True
+                    })
+
+                return {
+                    "tasks": tasks_data,
+                    "stats": stats
+                }
+
+            # EMPLOYEE ============================================================================================================
+
+            elif current_user['role'] == 'employee':
+
+                tasks = Tasks.query.filter_by(assigned_to=current_user['id'],is_active=True).all()
+
+                for t in tasks:
+                    tasks_data.append({
+                        "uuid": t.uuid,
+                        "title": t.title,
+                        "description": t.description,
+                        "status": t.status,
+                        "created_at": t.created_at.isoformat(),
+                        "updated_at": t.updated_at.isoformat(),
+                        "is_my_task": True
+                    })
+
+                return {
+                    "tasks": tasks_data
+                }
+
+        except Exception as e:
+            return {"error": str(e)}

@@ -6,17 +6,17 @@ def dashboard_routs(current_user):
 
     try:
         
-        
+        # ADMIN
         if current_user['role'] == "admin":
             
-            return Tasks.admin_dashboard()
-
+            return jsonify(Tasks.dashboard(current_user))
+        
+        # MANAGER
         elif current_user['role'] == "manager":
             
-            task = Tasks.query.filter_by(assigned_by=current_user['id']).all()
+            return jsonify(Tasks.dashboard(current_user))
 
-            return jsonify([t.dashboard() for t in task])
-
+        # EMPLOYEE
         elif current_user['role'] == "employee":
             
             task = Tasks.query.filter_by(assigned_to=current_user['id']).all()
